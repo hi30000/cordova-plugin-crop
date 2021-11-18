@@ -59,8 +59,38 @@
         navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
     }
     
-    [self.viewController presentViewController:navigationController animated:YES completion:NULL];
+//seman: top
+//    [self.viewController presentViewController:navigationController animated:YES completion:NULL]; // origin
+    UIViewController *vc = [self visibleViewController:[UIApplication sharedApplication].keyWindow.rootViewController];
+    [vc presentViewController:navigationController animated:YES completion:NULL];
+    
 }
+//seman : top
+- (UIViewController *)visibleViewController:(UIViewController *)rootViewController
+{
+    if (rootViewController.presentedViewController == nil)
+    {
+        return rootViewController;
+    }
+    if ([rootViewController.presentedViewController isKindOfClass:[UINavigationController class]])
+    {
+        UINavigationController *navigationController = (UINavigationController *)rootViewController.presentedViewController;
+        UIViewController *lastViewController = [[navigationController viewControllers] lastObject];
+
+        return [self visibleViewController:lastViewController];
+    }
+    if ([rootViewController.presentedViewController isKindOfClass:[UITabBarController class]])
+    {
+        UITabBarController *tabBarController = (UITabBarController *)rootViewController.presentedViewController;
+        UIViewController *selectedViewController = tabBarController.selectedViewController;
+
+        return [self visibleViewController:selectedViewController];
+    }
+
+    UIViewController *presentedViewController = (UIViewController *)rootViewController.presentedViewController;
+
+    return [self visibleViewController:presentedViewController];
+}//seman : top@
 
 #pragma mark - PECropViewControllerDelegate
 
